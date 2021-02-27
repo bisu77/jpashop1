@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -36,5 +37,14 @@ public class MemberController {
 
         memberService.join(member);
         return "redirect:/";
+    }
+
+    @GetMapping("/members")
+    public String list(Model model){
+        //1. 화면이 복잡해지면 MemberForm으로 변환해서 반환하도록 처리 하는 것이 좋다.!
+        //2. API를 만들 때에는 엔티티를 반환해서는 안 됨.!(API 스펙이 바뀔 수 있음)
+        List<Member> members = memberService.findMembers();
+        model.addAttribute("members",members);
+        return "/members/memberList";
     }
 }
