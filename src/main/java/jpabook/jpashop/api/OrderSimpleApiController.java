@@ -3,8 +3,8 @@ package jpabook.jpashop.api;
 import jpabook.jpashop.domain.Address;
 import jpabook.jpashop.domain.Order;
 import jpabook.jpashop.domain.OrderStatus;
+import jpabook.jpashop.repository.OrderRepository;
 import jpabook.jpashop.repository.OrderSearch;
-import jpabook.jpashop.service.OrderService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,11 +24,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class OrderSimpleApiController {
 
-    private final OrderService orderService;
+    private final OrderRepository orderRepository;
 
     @GetMapping("/api/v1/simple-orders")
     public List<Order> orderV1(){
-        List<Order> orders = orderService.findOrders(new OrderSearch());
+        List<Order> orders = orderRepository.findAllByCriteria(new OrderSearch());
         for (Order order : orders) {
             order.getMember().getName();
             order.getDelivery().getAddress();
@@ -37,7 +37,7 @@ public class OrderSimpleApiController {
     }
     @GetMapping("/api/v2/simple-orders")
     public List<SimpleOrderDto> orderV2(){
-        List<Order> orders = orderService.findOrders(new OrderSearch());
+        List<Order> orders = orderRepository.findAllByCriteria(new OrderSearch());
         List<SimpleOrderDto> result = orders.stream()
                 .map(SimpleOrderDto::new)
                 .collect(Collectors.toList());
@@ -45,6 +45,14 @@ public class OrderSimpleApiController {
         return result;
     }
 
+    @GetMapping("/api/v3/simple-orders")
+    public List<SimpleOrderDto> orderV3(){
+        List<Order> orders = orderRepository.findAllWithMemberDeliery();
+        List<SimpleOrderDto> result = orders.stream()
+                .map(SimpleOrderDto::new)
+                .collect(Collectors.toList());
+        return result;
+    }
     @Data
     static class SimpleOrderDto {
         private Long orderId;
