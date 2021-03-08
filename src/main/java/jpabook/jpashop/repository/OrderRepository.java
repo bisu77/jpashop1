@@ -57,4 +57,22 @@ public class OrderRepository {
                 ).getResultList();
 
     }
+
+    /**
+     * 컬렉션 페치 조인
+     * - 단점
+     *      1) 페이징 처리 불가(메모리에서 처리)
+     *      2) 컬렉션 페치 조인은 1개만 사용할 수 있음
+     *         => 2개 이상 할 경우 데이터가 부정합하게 조회 될 수 있음
+     * @return
+     */
+    public List<Order> findAllWithItem() {
+         return em.createQuery(
+                "select distinct o from Order o" +
+                        " join fetch o.member m" +
+                        " join fetch o.delivery d" +
+                        " join fetch o.orderItems oi" +
+                        " join fetch oi.item i", Order.class
+                ).getResultList();
+    }
 }
