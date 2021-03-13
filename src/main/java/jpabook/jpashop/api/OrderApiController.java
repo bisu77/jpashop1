@@ -25,19 +25,19 @@ public class OrderApiController {
     private final OrderQueryRepository orderQueryRepository;
 
     @GetMapping("/api/v1/orders")
-    public List<Order> orderV1(){
+    public List<Order> orderV1() {
         List<Order> all = orderRepository.findAllByCriteria(new OrderSearch());
         for (Order order : all) {
             order.getMember().getName();
             order.getDelivery().getAddress();
             List<OrderItem> orderItems = order.getOrderItems();
-            orderItems.stream().forEach(o->o.getItem().getName());
+            orderItems.stream().forEach(o -> o.getItem().getName());
         }
         return all;
     }
 
     @GetMapping("/api/v2/orders")
-    public List<OrderDto> orderV2(){
+    public List<OrderDto> orderV2() {
         List<Order> orders = orderRepository.findAllByCriteria(new OrderSearch());
         List<OrderDto> result = orders.stream()
                 .map(o -> new OrderDto(o))
@@ -47,7 +47,7 @@ public class OrderApiController {
     }
 
     @GetMapping("/api/v3/orders")
-    public List<OrderDto> orderV3(){
+    public List<OrderDto> orderV3() {
         List<Order> findOrder = orderRepository.findAllWithItem();
         List<OrderDto> result = findOrder.stream()
                 .map(OrderDto::new)
@@ -57,7 +57,7 @@ public class OrderApiController {
     }
 
     @GetMapping("/api/v3.1/orders")
-    public List<OrderDto> orderV3_page(@RequestParam(value = "offset") int offset, @RequestParam(value="limit") int limit){
+    public List<OrderDto> orderV3_page(@RequestParam(value = "offset") int offset, @RequestParam(value = "limit") int limit) {
         List<Order> findOrder = orderRepository.findAllWithMemberDelivery(offset, limit);
         List<OrderDto> result = findOrder.stream()
                 .map(OrderDto::new)
@@ -67,9 +67,10 @@ public class OrderApiController {
     }
 
     @GetMapping("/api/v4/orders")
-    public List<OrderQueryDto> orderV4(){
+    public List<OrderQueryDto> orderV4() {
         return orderQueryRepository.findOrderQueryDtos();
     }
+
     @Data
     static class OrderDto {
 
@@ -90,6 +91,11 @@ public class OrderApiController {
                     .map(orderItem -> new OrderItemDto(orderItem))
                     .collect(Collectors.toList());
         }
+    }
+
+    @GetMapping("/api/v5/orders")
+    public List<OrderQueryDto> orderV5() {
+        return orderQueryRepository.findAllByDto_optimization();
     }
 
     @Data
